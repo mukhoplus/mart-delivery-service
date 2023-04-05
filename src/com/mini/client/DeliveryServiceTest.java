@@ -10,10 +10,10 @@ public class DeliveryServiceTest {
 	public static void main(String[] args) {
 		DeliveryServiceDAOImpl ds = DeliveryServiceDAOImpl.getInstance();
 		
-		// Å×½ºÆ® ÄÚµå
+		// ï¿½×½ï¿½Æ® ï¿½Úµï¿½
 		try {
-			ds.saveMart(new Mart("¹¬È£", "µ¿ÇØ½Ã"));
-			ds.deleteMart("¹¬È£");
+			ds.saveMart(new Mart("mukho", "mukhodong"));
+			ds.deleteMart("mukho");
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -23,9 +23,9 @@ public class DeliveryServiceTest {
 	static {
 		try {
 			Class.forName(ServerInfo.DRIVER_NAME);
-			System.out.println("¼­¹ö°¡ ÄÑÁ³¾î¿ä.");
+			System.out.println("Server is running.");
 		} catch(ClassNotFoundException e){
-			System.out.println("¼­¹ö°¡ ¾ÈÄÑÁ³¾î¿ä.");
+			System.out.println("Server is not running.");
 		}
 	}
 }

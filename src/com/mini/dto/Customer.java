@@ -9,6 +9,15 @@ public class Customer {
 	private String address;
 	private ArrayList<ProductInMart> list;
 	
+	public Customer(String id, String password, String name, String address) {
+		super();
+		this.id = id;
+		this.password = password;
+		this.name = name;
+		this.address = address;
+		this.list = new ArrayList<>();
+	}
+	
 	public Customer(String id, String password, String name, String address, ArrayList<ProductInMart> list) {
 		super();
 		this.id = id;

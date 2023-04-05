@@ -30,7 +30,7 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 	@Override
 	public Connection getConnect() throws SQLException {
 		Connection conn = DriverManager.getConnection(ServerInfo.URL, ServerInfo.USER, ServerInfo.PASS);
-		System.out.println("데이터베이스 연결");
+		System.out.println("Database is connected.");
 		return conn;
 	}
 
@@ -101,14 +101,14 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 		
 		try {
 			conn = getConnect();
-			if(isExistMart(mart.getName(), conn)) throw new DuplicateException("이미 존재하는 지점입니다.");
+			if(isExistMart(mart.getName(), conn)) throw new DuplicateException("A mart with that name already exists.");
 			
 			String query = "INSERT INTO customer VALUES(?, ?)";
 			ps = conn.prepareStatement(query);
 			ps.setString(1, mart.getName());
 			ps.setString(2, mart.getAddress());
 			
-			System.out.println(ps.executeUpdate() + "개의 지점이 추가되었습니다.");
+			System.out.println(ps.executeUpdate() + "-row is saved.");
 		} finally {
 			closeAll(ps, conn);
 		}
@@ -121,13 +121,13 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 		
 		try {
 			conn = getConnect();
-			if(!isExistMart(name, conn)) throw new NotExistException("존재하지 않는 지점입니다.");
+			if(!isExistMart(name, conn)) throw new NotExistException("There is no mart with that name.");
 			
 			String query = "DELETE FROM mart WHERE name=?";
 			ps = conn.prepareStatement(query);
 			ps.setString(1, name);
 
-			System.out.println(ps.executeUpdate() + "개의 지점이 제거되었습니다.");
+			System.out.println(ps.executeUpdate() + "-row is deleted.");
 		} finally {
 			closeAll(ps, conn);
 		}
@@ -142,7 +142,7 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 		
 		try {
 			conn = getConnect();
-			if(!isExistMart(name, conn)) throw new NotExistException("존재하지 않는 지점입니다.");
+			if(!isExistMart(name, conn)) throw new NotExistException("There is no mart with that name.");
 			
 			String query = "SELECT name, address FROM mart WHERE name=?";
 			ps = conn.prepareStatement(query);
