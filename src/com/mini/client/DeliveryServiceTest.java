@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.mini.dao.impl.DeliveryServiceDAOImpl;
 import com.mini.dto.Mart;
+import com.mini.dto.Product;
 import com.mini.dto.ProductInMart;
 
 import config.ServerInfo;
@@ -26,6 +27,9 @@ public class DeliveryServiceTest {
 			
 			//ds.saveProductInMart("mukho1", 3, 1);
 			//ds.saveProductInMart("mukho", 1, 5);
+			ds.saveProduct(new Product(3, "coffee", 2500));
+			//ds.saveProduct(new Product(3, "coffee", 2500));
+			
 			ArrayList<ProductInMart> pim = ds.getAllProductsInMartByName("mukho");
 			for(ProductInMart p: pim)
 				System.out.println(p);

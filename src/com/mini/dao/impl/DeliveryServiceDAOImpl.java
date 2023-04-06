@@ -209,34 +209,131 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 	}
 
 	// Product
+	private boolean isExistProduct(int serialNumber, Connection conn) throws SQLException {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		String sql = "SELECT SERIAL_NUMBER FROM product WHERE SERIAL_NUMBER=?";
+
+		ps = conn.prepareStatement(sql);
+		ps.setInt(1, serialNumber);
+		rs = ps.executeQuery();
+
+		return rs.next();
+	}
+	
 	@Override
 	public void saveProduct(Product product) throws SQLException, DuplicateException {
-		// TODO Auto-generated method stub
-		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getConnect();
+			if (!isExistProduct(product.getSerialNumber(), conn)) {
+				String query = "INSERT INTO product(SERIAL_NUMBER, name, price) VALUES(?,?,?)";
+
+				ps = conn.prepareStatement(query);
+				ps.setInt(1, product.getSerialNumber());
+				ps.setString(2, product.getName());
+				ps.setInt(3, product.getPrice());
+
+				System.out.println(ps.executeUpdate() + "-row is saved.");
+
+			} else {
+				throw new DuplicateException("이미 존재하는 상품입니다.");
+			}
+		} finally {
+			closeAll(ps, conn);
+		}
 	}
 
 	@Override
 	public void deleteProduct(int serialNumber) throws SQLException, NotExistException {
-		// TODO Auto-generated method stub
-		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getConnect();
+			if (isExistProduct(serialNumber, conn)) {
+				String query = "DELETE product WHERE SERIAL_NUMBER=?";
+
+				ps = conn.prepareStatement(query);
+				ps.setInt(1, serialNumber);
+				System.out.println(ps.executeUpdate() + "-row is deleted.");
+			} else {
+				throw new NotExistException("삭제할 상품이 존재하지 않습니다.");
+			}
+		} finally {
+			closeAll(ps, conn);
+		}
 	}
 
 	@Override
 	public void updateProduct(Product product) throws SQLException, NotExistException {
-		// TODO Auto-generated method stub
-		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getConnect();
+			if (isExistProduct(product.getSerialNumber(), conn)) {
+				String query = "UPDATE product SET name=?, price=? WHERE SERIAL_NUMBER=?";
+				ps = conn.prepareStatement(query);
+
+				ps.setString(1, product.getName());
+				ps.setInt(2, product.getPrice());
+				ps.setInt(3, product.getSerialNumber());
+
+				System.out.println(ps.executeUpdate() + " row UPDATE OK");
+
+			} else {
+				throw new NotExistException("수정할 상품이 존재하지 않습니다.");
+			}
+		} finally {
+			closeAll(ps, conn);
+		}
 	}
 
 	@Override
 	public Product getProductBySerialNumber(int serialNumber) throws SQLException, NotExistException {
-		// TODO Auto-generated method stub
-		return null;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Product product = null;
+		try {
+			conn = getConnect();
+			String query = "SELECT SERIAL_NUMBER, name, price FROM product WHERE SERIAL_NUMBER=?";
+			ps = conn.prepareStatement(query);
+			ps.setInt(1, serialNumber);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				product = new Product(serialNumber, rs.getString("name"), rs.getInt("price"));
+			} else {
+				throw new NotExistException("");
+			}
+		} finally {
+			closeAll(ps, conn);
+		}
+
+		return product;
 	}
 
 	@Override
 	public ArrayList<Product> getAllProducts() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<Product> productList = new ArrayList<>();
+
+		try {
+			conn = getConnect();
+			String query = "SELECT SERIAL_NUMBER, name, price FROM product";
+			ps = conn.prepareStatement(query);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				productList.add(new Product(rs.getInt("SERIAL_NUMBER"), rs.getString("name"), rs.getInt("price")));
+			}
+		} finally {
+			closeAll(rs, ps, conn);
+		}
+
+		return productList;
 	}
 	
 	@Override
