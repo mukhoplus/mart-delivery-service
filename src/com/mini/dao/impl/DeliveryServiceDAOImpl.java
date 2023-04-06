@@ -103,7 +103,7 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 			conn = getConnect();
 			if(isExistMart(mart.getName(), conn)) throw new DuplicateException("A mart with that name already exists.");
 			
-			String query = "INSERT INTO customer VALUES(?, ?)";
+			String query = "INSERT INTO mart VALUES(?, ?)";
 			ps = conn.prepareStatement(query);
 			ps.setString(1, mart.getName());
 			ps.setString(2, mart.getAddress());

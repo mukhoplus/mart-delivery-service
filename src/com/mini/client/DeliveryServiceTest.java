@@ -10,7 +10,6 @@ public class DeliveryServiceTest {
 	public static void main(String[] args) {
 		DeliveryServiceDAOImpl ds = DeliveryServiceDAOImpl.getInstance();
 		
-		// �׽�Ʈ �ڵ�
 		try {
 			ds.saveMart(new Mart("mukho", "mukhodong"));
 			ds.deleteMart("mukho");
