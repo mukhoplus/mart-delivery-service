@@ -47,40 +47,152 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 	}
 
 	// Customer
+	private boolean isExistCustomer(String id, Connection conn) throws SQLException{
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	        
+	    String query = "SELECT id FROM customer WHERE id=?";
+	    ps = conn.prepareStatement(query);
+	    ps.setString(1, id);
+	    rs = ps.executeQuery();
+	        
+	    return rs.next();
+	}
+	
 	@Override
 	public void saveCustomer(Customer customer) throws SQLException, DuplicateException {
-		// TODO Auto-generated method stub
-		
+		Connection conn = null;
+	    PreparedStatement ps = null;
+	    try {
+	        conn = getConnect();
+	        
+	        if(isExistCustomer(customer.getId(),conn)) throw new DuplicateException("A Customer with that id already exists.");
+	        
+	        String query = "INSERT INTO customer(id, password, name, address) VALUES(?,?,?,?)";
+	        ps=conn.prepareStatement(query);
+	        ps.setString(1, customer.getId());
+	        ps.setString(2, customer.getPassword());
+	        ps.setString(3, customer.getName());
+	        ps.setString(4, customer.getAddress());
+	            
+	        System.out.println(ps.executeUpdate() + "-row is saved.");
+	        
+	    }finally {
+	        closeAll(ps, conn);
+	    }
 	}
 
 	@Override
 	public void deleteCustomer(String id) throws SQLException, NotExistException {
-		// TODO Auto-generated method stub
-		
+		Connection conn = null;
+	    PreparedStatement ps = null;
+	    try {
+	        conn = getConnect();
+	        if(!isExistCustomer(id,conn)) throw new NotExistException("There is no customer with that id.");
+	        String query = "DELETE FROM customer WHERE id=?";
+	        ps=conn.prepareStatement(query);
+	        ps.setString(1, id);
+	    
+	        System.out.println(ps.executeUpdate() + "-row is deleted.");
+	        
+	    }finally {
+	        closeAll(ps, conn);
+	    }
 	}
 
 	@Override
 	public void updateCustomer(Customer customer) throws SQLException, NotExistException {
-		// TODO Auto-generated method stub
-		
+	    Connection conn = null;
+	    PreparedStatement ps = null;
+	    try {
+	        conn = getConnect();
+	        if(!isExistCustomer(customer.getId(),conn)) throw new NotExistException("There is no customer with that id.");
+	        String query = "UPDATE customer SET password = ?, name = ?, address = ? WHERE id = ?";
+	        ps=conn.prepareStatement(query);
+	        ps.setString(1, customer.getPassword());
+	        ps.setString(2, customer.getName());
+	        ps.setString(3, customer.getAddress());
+	        ps.setString(4, customer.getId());
+	            
+	        System.out.println(ps.executeUpdate() + "-row is updated.");
+	        
+	    }finally {
+	        closeAll(ps, conn);
+	    }
 	}
 
 	@Override
 	public Customer getCustomerById(String id) throws SQLException, NotExistException {
-		// TODO Auto-generated method stub
-		return null;
+		Connection conn = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    Customer customer = null;
+	    
+	    try {
+	        conn = getConnect();
+	        if(!isExistCustomer(id, conn)) throw new NotExistException("There is no customer with that id.");
+	        
+	        String query = "SELECT id, password, name, address FROM customer WHERE id=?";
+	        ps = conn.prepareStatement(query);
+	        ps.setString(1, id);
+
+	        rs = ps.executeQuery();
+	        while(rs.next()) {
+	             customer = new Customer(rs.getString("id"), rs.getString("password"), rs.getString("name"), rs.getString("address"));
+	        }
+	    } finally {
+	        closeAll(rs, ps, conn);
+	    }
+	    
+	    return customer;
 	}
 
 	@Override
 	public ArrayList<Customer> getCustomersByName(String name) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		Connection conn = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    ArrayList<Customer> customerList = new ArrayList<>();
+	    
+	    try {
+	        conn = getConnect();
+	        
+	        String query = "SELECT id, password, name, address FROM customer WHERE name = ?";
+	        ps = conn.prepareStatement(query);
+	        ps.setString(1, name);
+	        rs = ps.executeQuery();
+	        while(rs.next()) {
+	            customerList.add(new Customer(rs.getString("id"), rs.getString("password"), rs.getString("name"), rs.getString("address")));
+	        }
+	    } finally {
+	        closeAll(rs, ps, conn);
+	    }
+	    
+	    return customerList;
 	}
 
 	@Override
 	public ArrayList<Customer> getAllCustomer() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		Connection conn = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    ArrayList<Customer> customerList = new ArrayList<>();
+	    
+	    try {
+	        conn = getConnect();
+	        
+	        String query = "SELECT id, password, name, address FROM customer";
+	        ps = conn.prepareStatement(query);
+
+	        rs = ps.executeQuery();
+	        while(rs.next()) {
+	            customerList.add(new Customer(rs.getString("id"), rs.getString("password"), rs.getString("name"), rs.getString("address")));
+	        }
+	    } finally {
+	        closeAll(rs, ps, conn);
+	    }
+	    
+	    return customerList;
 	}
 
 	// Mart
