@@ -49,4 +49,5 @@ public interface DeliveryServiceDAO {
 
 	// Delivery
 	void saveDelivery(String delivaryNumber, String martName, String customerName, ArrayList<ProductInMart> list) throws SQLException, NotExistException;
+	public void getTotal() throws SQLException;
 }

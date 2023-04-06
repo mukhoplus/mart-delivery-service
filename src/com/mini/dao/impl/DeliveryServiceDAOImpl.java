@@ -566,5 +566,28 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void getTotal() throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn = getConnect();
+            String query = "SELECT customer_id, total FROM (SELECT customer_id, sum(total) total FROM delivery GROUP BY customer_id) ORDER BY total DESC";
+            ps = conn.prepareStatement(query);
+            rs = ps.executeQuery();
+
+            //출력
+            int rank = 1;
+            System.out.println("RANK CUSTOMER_ID TOTAL");
+            while(rs.next()) {
+            	System.out.println(String.format("%-4d %-11s %-7d", rank++, rs.getString("customer_id"), rs.getInt("total")));
+            }
+        }finally {
+            closeAll(rs, ps, conn);
+        }
+    }
 
 }

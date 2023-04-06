@@ -27,18 +27,19 @@ public class DeliveryServiceTest {
 			
 			//ds.saveProductInMart("mukho1", 3, 1);
 			//ds.saveProductInMart("mukho", 1, 5);
-			ds.saveProduct(new Product(3, "coffee", 2500));
+			//ds.saveProduct(new Product(3, "coffee", 2500));
 			//ds.saveProduct(new Product(3, "coffee", 2500));
 			
-			ArrayList<ProductInMart> pim = ds.getAllProductsInMartByName("mukho");
-			for(ProductInMart p: pim)
-				System.out.println(p);
-			
-			ds.updateProductInMart("mukho", 2, 4);
-			
-			pim = ds.getAllProductsInMartByName("mukho");
-			for(ProductInMart p: pim)
-				System.out.println(p);
+//			ArrayList<ProductInMart> pim = ds.getAllProductsInMartByName("mukho");
+//			for(ProductInMart p: pim)
+//				System.out.println(p);
+//			
+//			ds.updateProductInMart("mukho", 2, 4);
+//			
+//			pim = ds.getAllProductsInMartByName("mukho");
+//			for(ProductInMart p: pim)
+//				System.out.println(p);
+			ds.getTotal();
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
