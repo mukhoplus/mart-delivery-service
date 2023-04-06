@@ -246,24 +246,114 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 	}
 	
 	// ProductInList
-	@Override
-	public void saveProductInMart() throws SQLException, DuplicateException, NotExistException {
-		// TODO Auto-generated method stub
+	private boolean isExistProductInMart(String name, int serialNumber, Connection conn) throws SQLException {
+		String query = "SELECT stock FROM productinmart WHERE mart_name=? AND serial_number=?";
 		
-	}
-
-	@Override
-	public void updateProductInMart()
-			throws SQLException, DuplicateException, NotExistException, CannotUpdateException {
-		// TODO Auto-generated method stub
-		
+	    PreparedStatement ps = conn.prepareStatement(query);
+	    ps.setString(1, name);
+	    ps.setInt(2, serialNumber);
+	    ResultSet rs = ps.executeQuery();
+	    
+		return rs.next();
 	}
 	
+	@Override
+	public void saveProductInMart(String martName, int serialNumber, int stock) throws SQLException, DuplicateException, NotExistException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		try {
+			conn = getConnect();
+			
+			if(!isExistMart(martName, conn)) throw new NotExistException("There is no mart with that name.");
+			//if(isExistProduct(serialNumber, conn)) throw new NotExistException("There is no product with that name.");
+			if(isExistProductInMart(martName, serialNumber, conn)) throw new DuplicateException("A product already exists in mart.");
+			
+			String query = "INSERT INTO productinmart VALUES(?, ?, ?)";
+			ps = conn.prepareStatement(query);
+			ps.setString(1, martName);
+			ps.setInt(2, serialNumber);
+			ps.setInt(3, stock);
+		
+			System.out.println(ps.executeUpdate() + "-row is saved.");
+		} finally {
+			closeAll(ps, conn);
+		}
+	}
+	
+	private Integer getStockByNameAndSerialNumber(String martName, int serialNumber, Connection conn) throws SQLException{
+		String query = "SELECT stock FROM productinmart WHERE mart_name=? AND serial_number=?";
+		
+	    PreparedStatement ps = conn.prepareStatement(query);
+	    ps.setString(1, martName);
+	    ps.setInt(2, serialNumber);
+	    ResultSet rs = ps.executeQuery();
+	    int stock = 0;
+	    while(rs.next()) {
+	    	stock = rs.getInt("stock");
+	    }
+	    
+	    return stock;
+	}
+	
+	private boolean canUpdateStock(int stock, int stockDiff) {
+		if(stock < stockDiff) return false;
+		if(stock - stockDiff < 0) return false;
+		return true;
+	}
+	
+	// 사용자가 구매 확정시 재고를 감소시키는 함수
+	@Override
+	public void updateProductInMart(String martName, int serialNumber, int stockDiff)
+			throws SQLException, DuplicateException, NotExistException, CannotUpdateException, NotAvailableException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		try {
+			conn = getConnect();
+			
+			if(!isExistMart(martName, conn)) throw new NotExistException("There is no mart with that name.");
+			if(!isExistProductInMart(martName, serialNumber, conn)) throw new NotExistException("There is no product in mart with that name.");
+			
+			int stock = getStockByNameAndSerialNumber(martName, serialNumber, conn);
+			if(!canUpdateStock(stock, stockDiff)) throw new NotAvailableException("Unvailable to change.");
+			
+			String query = "Update productinmart SET stock=? WHERE mart_name=? AND serial_number=?";
+			ps = conn.prepareStatement(query);
+			ps.setInt(1, stock-stockDiff);
+			ps.setString(2, martName);
+			ps.setInt(3, serialNumber);
+			
+			System.out.println(ps.executeUpdate() + "-row is updated.");
+		} finally {
+			closeAll(ps, conn);
+		}
+	}
 	
 	@Override
-	public ArrayList<ProductInMart> getAllProductsInMartByName(String name) throws SQLException, NotAvailableException {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<ProductInMart> getAllProductsInMartByName(String name) throws SQLException, NotExistException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<ProductInMart> productInMartList = new ArrayList<>();
+		
+		try {
+			conn = getConnect();
+			
+			if(!isExistMart(name, conn)) throw new NotExistException("There is no mart with that name.");
+			
+			String query = "SELECT * FROM productinmart WHERE mart_name=?";
+			ps = conn.prepareStatement(query);
+			ps.setString(1, name);
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				productInMartList.add(new ProductInMart(rs.getString("mart_name"), rs.getInt("serial_number"), rs.getInt("stock")));
+			}
+		} finally {
+			closeAll(rs, ps, conn);
+		}
+		return productInMartList;
 	}
 
 	// Delivery

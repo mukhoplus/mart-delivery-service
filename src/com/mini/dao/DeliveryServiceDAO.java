@@ -44,9 +44,9 @@ public interface DeliveryServiceDAO {
 	ArrayList<Product> getAllProducts() throws SQLException;
 	
 	// ProductInMart
-	void saveProductInMart() throws SQLException, DuplicateException, NotExistException;
-	void updateProductInMart() throws SQLException, DuplicateException, NotExistException, CannotUpdateException;
-	ArrayList<ProductInMart> getAllProductsInMartByName(String name) throws SQLException, NotAvailableException;	
+	void saveProductInMart(String martName, int serialNumber, int stock) throws SQLException, DuplicateException, NotExistException;
+	void updateProductInMart(String martName, int serialNumber, int stockDiff) throws SQLException, DuplicateException, NotExistException, CannotUpdateException, NotAvailableException;
+	ArrayList<ProductInMart> getAllProductsInMartByName(String name) throws SQLException, NotExistException;	
 
 	// Delivery
 	void saveDelivery(String delivaryNumber, String martName, String customerName, ArrayList<ProductInMart> list) throws SQLException, NotExistException;
