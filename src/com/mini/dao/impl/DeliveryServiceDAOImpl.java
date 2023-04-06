@@ -1,10 +1,12 @@
 package com.mini.dao.impl;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import com.mini.dao.DeliveryServiceDAO;
@@ -561,10 +563,67 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 
 	// Delivery
 	@Override
-	public void saveDelivery(String delivaryNumber, String martName, String customerName, ArrayList<ProductInMart> list)
-			throws SQLException, NotExistException {
-		// TODO Auto-generated method stub
-		
+	public void saveDelivery(String id, String name, int serialNumber, int stock) throws SQLException, NotExistException, NotAvailableException, DuplicateException, CannotUpdateException {
+		Connection conn = null;
+	    PreparedStatement ps = null;
+	    PreparedStatement ps2 = null;
+	    PreparedStatement ps3 = null;
+	    PreparedStatement ps5 = null;
+	    ResultSet rs = null;
+	    ResultSet rs2 = null;
+	    ResultSet rs5 = null;
+	    
+	    try {
+	        conn = getConnect();
+	        String query = "SELECT address FROM customer WHERE id = ?";
+	        ps = conn.prepareStatement(query);
+	        ps.setString(1, id);
+	        rs = ps.executeQuery();
+	        rs.next();
+	        
+	        String address = rs.getString("address");
+	        
+	        String query5 = "SELECT address FROM mart WHERE name=?";
+	        ps5 = conn.prepareStatement(query5);
+	        ps5.setString(1, name);
+	        rs5 = ps5.executeQuery();
+	        rs5.next();
+	        String martAddress = rs5.getString("address");
+	        
+	        if(!address.equals(martAddress)) throw new NotAvailableException("The store is not available.");
+	        
+	        String query2 = "SELECT pm.mart_name mart_name, p.serial_number serial_number, p.name product_name, price, stock "
+	                        + "FROM Product p, ProductInMart pm WHERE p.serial_number = pm.serial_number AND mart_name = ? AND  p.serial_number = ?";
+	        ps2 = conn.prepareStatement(query2);
+	        ps2.setString(1, name);
+	        ps2.setInt(2, serialNumber);
+	        rs2 = ps2.executeQuery();
+	        rs2.next();
+	        updateProductInMart(name, serialNumber, stock);
+	        
+	        String query3 = "INSERT INTO delivery VALUES(?, ?, ?, ?, ?, ?, ?)";
+	        ps3 = conn.prepareStatement(query3);
+	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+	        Date date = new Date(System.currentTimeMillis());
+	        String time = formatter.format(date);
+	        ps3.setString(1, time);
+	        ps3.setString(2, name);
+	        ps3.setString(3, id);
+	        ps3.setString(4, rs2.getString("product_name"));
+	        ps3.setInt(5, rs2.getInt("price"));
+	        ps3.setInt(6, stock);
+	        ps3.setInt(7, (rs2.getInt("price")*stock));
+	        
+	        System.out.println(ps3.executeUpdate() + "-row is saved.");
+	        
+	    } finally {
+	    	rs5.close();
+	    	ps5.close();
+	        ps3.close();
+	        rs2.close();
+	        ps2.close();
+	        closeAll(rs, ps, conn);
+	    }
 	}
 	
 	@Override

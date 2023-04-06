@@ -48,6 +48,6 @@ public interface DeliveryServiceDAO {
 	ArrayList<ProductInMart> getAllProductsInMartByName(String name) throws SQLException, NotExistException;	
 
 	// Delivery
-	void saveDelivery(String delivaryNumber, String martName, String customerName, ArrayList<ProductInMart> list) throws SQLException, NotExistException;
+	public void saveDelivery(String id, String name, int serialNumber, int stock) throws SQLException, NotExistException, NotAvailableException, DuplicateException, CannotUpdateException;
 	public void getTotal() throws SQLException;
 }
