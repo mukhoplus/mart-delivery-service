@@ -27,7 +27,6 @@ public interface DeliveryServiceDAO {
 	Customer getCustomerById(String id) throws SQLException, NotExistException;
 	ArrayList<Customer> getCustomersByName(String name) throws SQLException;
 	ArrayList<Customer> getAllCustomer() throws SQLException;
-	void saveProductInList() throws SQLException, NotExistException, NotAvailableException;
 	
 	// Mart
 	void saveMart(Mart mart) throws SQLException, DuplicateException;

@@ -448,12 +448,6 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 		return productList;
 	}
 	
-	@Override
-	public void saveProductInList() throws SQLException, NotExistException, NotAvailableException {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	// ProductInList
 	private boolean isExistProductInMart(String name, int serialNumber, Connection conn) throws SQLException {
 		String query = "SELECT stock FROM productinmart WHERE mart_name=? AND serial_number=?";
