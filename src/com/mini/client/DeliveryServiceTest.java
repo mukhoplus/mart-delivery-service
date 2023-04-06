@@ -3,6 +3,7 @@ package com.mini.client;
 import java.util.ArrayList;
 
 import com.mini.dao.impl.DeliveryServiceDAOImpl;
+import com.mini.dto.Delivery;
 import com.mini.dto.Mart;
 import com.mini.dto.Product;
 import com.mini.dto.ProductInMart;
@@ -35,12 +36,21 @@ public class DeliveryServiceTest {
 				System.out.println(p);
 		
 //			ds.updateProductInMart("mukho", 2, 4);
-			ds.saveDelivery("2", "mukho", 1, 2);
+//			ds.saveDelivery("2", "mukho", 1, 2);
+//			
+//			pim = ds.getAllProductsInMartByName("mukho");
+//			for(ProductInMart p: pim)
+//				System.out.println(p);
 			
-			pim = ds.getAllProductsInMartByName("mukho");
-			for(ProductInMart p: pim)
-				System.out.println(p);
+//			ArrayList<Delivery> del = ds.getDelivery();
+//			for(Delivery d: del)
+//				System.out.println(d);
+//			
+//			del = ds.getDelivery("1");
+//			for(Delivery d: del)
+//				System.out.println(d);
 			
+			//ds.saveDelivery("2", "mukho", 2, 3);
 			ds.getTotal();
 		} catch(Exception e) {
 			System.out.println(e.getMessage());

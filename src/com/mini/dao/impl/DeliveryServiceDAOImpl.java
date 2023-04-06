@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import com.mini.dao.DeliveryServiceDAO;
 import com.mini.dto.Customer;
+import com.mini.dto.Delivery;
 import com.mini.dto.Mart;
 import com.mini.dto.Product;
 import com.mini.dto.ProductInMart;
@@ -617,13 +618,58 @@ public class DeliveryServiceDAOImpl implements DeliveryServiceDAO {
 	        System.out.println(ps3.executeUpdate() + "-row is saved.");
 	        
 	    } finally {
-	    	rs5.close();
-	    	ps5.close();
-	        ps3.close();
-	        rs2.close();
-	        ps2.close();
+	    	if(rs5 != null) rs5.close();
+	    	if(ps5 != null) ps5.close();
+	    	if(ps3 != null) ps3.close();
+	    	if(rs2 != null) rs2.close();
+	    	if(ps2 != null) ps2.close();
 	        closeAll(rs, ps, conn);
 	    }
+	}
+	
+	@Override
+	public ArrayList<Delivery> getDelivery() throws SQLException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<Delivery> deliveryList = new ArrayList<>();
+
+		try {
+			conn = getConnect();
+			String query = "SELECT * FROM delivery ORDER BY DELIVARY_NUMBER";
+			ps = conn.prepareStatement(query);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				deliveryList.add(new Delivery(rs.getString("DELIVARY_NUMBER"), rs.getString("mart_name"), rs.getString("customer_id"), rs.getString("product_name"), rs.getInt("price"), rs.getInt("stock"), rs.getInt("total")));
+			}
+		} finally {
+			closeAll(rs, ps, conn);
+		}
+		
+		return deliveryList;
+	}
+	
+	@Override
+	public ArrayList<Delivery> getDelivery(String customId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<Delivery> deliveryList = new ArrayList<>();
+
+		try {
+			conn = getConnect();
+			String query = "SELECT * FROM delivery WHERE customer_id=? ORDER BY DELIVARY_NUMBER";
+			ps = conn.prepareStatement(query);
+			ps.setString(1, customId);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				deliveryList.add(new Delivery(rs.getString("DELIVARY_NUMBER"), rs.getString("mart_name"), rs.getString("customer_id"), rs.getString("product_name"), rs.getInt("price"), rs.getInt("stock"), rs.getInt("total")));
+			}
+		} finally {
+			closeAll(rs, ps, conn);
+		}
+		
+		return deliveryList;
 	}
 	
 	@Override

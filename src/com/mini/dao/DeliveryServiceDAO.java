@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.mini.dto.Customer;
+import com.mini.dto.Delivery;
 import com.mini.dto.Mart;
 import com.mini.dto.Product;
 import com.mini.dto.ProductInMart;
@@ -49,5 +50,7 @@ public interface DeliveryServiceDAO {
 
 	// Delivery
 	public void saveDelivery(String id, String name, int serialNumber, int stock) throws SQLException, NotExistException, NotAvailableException, DuplicateException, CannotUpdateException;
+	public ArrayList<Delivery> getDelivery() throws SQLException;
+	public ArrayList<Delivery> getDelivery(String customId) throws SQLException;
 	public void getTotal() throws SQLException;
 }
